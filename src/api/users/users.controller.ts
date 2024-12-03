@@ -45,13 +45,13 @@ export class UsersController {
     //     return await this.userService.findById(id)
     // }
 
-    // @Post()
-    // @UseGuards(AuthGuard)
-    // @ApiBearerAuth()
-    // async create(@Body() data: UserDto): Promise<UserEntity> {
+    @Post()
+    @UseGuards(AuthGuard)
+    @ApiBearerAuth()
+    async create(@Body() data: UserDto): Promise<UserEntity> {
 
-    //     return await this.userService.create(data)
-    // }
+        return await this.userService.create(data)
+    }
 
     // @Delete(':id')
     // @UseGuards(AuthGuard)
