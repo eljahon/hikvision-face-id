@@ -133,6 +133,7 @@ export class HikvisionUserAddService {
 
   async fetchData(): Promise<any> {
     const token = await this.authService.fetchToken();
+    console.log(token);
     const items = await fetch(`${process.env.FETCH_USERS}/child/get/register`, {
       method: 'GET',
       headers: {

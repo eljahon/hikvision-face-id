@@ -16,6 +16,7 @@ export class HikvisionUserAddController {
   // @HttpCode(200)
   async findAll() {
     const data = await this.hikvisionUserAddService.fetchData();
+    console.log(data);
     for await (const item of data.object) {
       const _data = {
         ...item,

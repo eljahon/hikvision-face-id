@@ -10,9 +10,8 @@ export class AuthService {
     if (this.token) {
       return this.token;
     }
-
     const response = await fetch(
-      `${process.env.FETCH_USERS}/child/get/register`,
+      `${process.env.FETCH_USERS}/auth/authenticate`,
       {
         method: 'POST',
         headers: {
@@ -25,6 +24,7 @@ export class AuthService {
       },
     );
     const data = await response.json();
+    console.log(data, 'token data');
     this.token = data.token;
     return this.token;
   }
