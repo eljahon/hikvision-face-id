@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Cron } from '@nestjs/schedule';
 import { HikvisionUserAddService } from './hikvision-user-add.service';
+import axios from 'axios';
 // import { HikvisionUserAddService } from './hikvision-user-add.service';
 // import { UsersService } from '../users/users.service';
 
@@ -12,21 +13,21 @@ export class HikvisionUserAddController {
     private readonly hikvisionUserAddService: HikvisionUserAddService,
   ) {}
   @Get()
-  // @Cron('45 * * * * *')
+  // @Cron('10 * * * * *')
   // @HttpCode(200)
   async findAll() {
-    const data = await this.hikvisionUserAddService.fetchData();
-    console.log(data);
-    for await (const item of data.object) {
-      const _data = {
-        ...item,
-        employeeNoString: item.id,
-      };
-      delete _data.id;
+    // const data = await this.hikvisionUserAddService.fetchData();
+    // console.log(data, 'data fetch =====>');
+    // for await (const item of data) {
+    //   const _data = {
+    //     ...item,
+    //     employeeNoString: item.id,
+    //   };
+    //   delete _data.id;
 
-      const user = await this.hikvisionUserAddService.userCreateInline(_data);
-      console.log(user, 'User created inline');
-    }
+    //   // const user = await this.hikvisionUserAddService.userCreateInline(_data);
+    //   // console.log(_data, 'User created inline');
+    // }
   }
 
   // @Post()

@@ -19,8 +19,6 @@ export class UserEntity {
    @Column('varchar', {nullable: true})
    status: string
 
-   @Column('jsonb', {nullable: true})
-   parents: Parents[]
 
    @Column('varchar')
    image_link: string

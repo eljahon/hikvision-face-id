@@ -8,7 +8,7 @@
         <protocolType>HTTP</protocolType>
         <parameterFormatType>JSON</parameterFormatType>
         <addressingFormatType>ipaddress</addressingFormatType>
-        <ipAddress>192.168.0.107</ipAddress>
+        <ipAddress>192.168.100.217</ipAddress>
         <portNo>4000</portNo>
         <userName>admin</userName>
         <httpAuthenticationMethod>none</httpAuthenticationMethod>
