@@ -20,6 +20,7 @@ export class NotificationService {
       page,
       pageSize,
     );
+    
     const pageCount = Math.ceil(total / pageSize);
 
     const result: PaginationResult<NotificationEntity> = {

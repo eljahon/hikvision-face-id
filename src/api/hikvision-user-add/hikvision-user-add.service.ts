@@ -12,6 +12,7 @@ import * as FormDataPackage from 'form-data';
 import urlLib from 'urllib'
 import { ConfigService } from '@nestjs/config';
 import { log } from 'console';
+const urlUserAdd = 'https://app.eramed.uz/app/api/v1/child/register/callback';
 const urlUserInfo = (api: string) =>
   `http://${api}/ISAPI/AccessControl/UserInfo/Record?format=json`;
 const urlUserInfoDelete = (api: string) =>
@@ -145,8 +146,9 @@ export class HikvisionUserAddService {
     for (const item of object) {
         const {isSuccess: isSuccessCreate, errCode: errCodeCreate} = await this.createEmployeesHikvision(item);
         const {isSuccess: isSuccessUpload, errCode: errCodeUpload} =isSuccessCreate ? await this.uploadFaceHikvision(item) : {isSuccess: false, errCode: errCodeCreate};
-        const {id: employeeNoString, name, type, status, image_link} = item
-        isSuccessUpload ? this.userCreateInline({employeeNoString, name, type, status ,image_link}) : null;
+        const {id: employeeNoString, name, type, status, image_link} = item;
+        const _data = await this.userService.create({employeeNoString, name, type, status ,image_link});
+        const user = await this.userAddResponse(item);
     
     }
 
@@ -181,6 +183,7 @@ export class HikvisionUserAddService {
     const user = await this.userService.findById(id);
     return user;
   }
+
   async uploadFaceHikvision(data:any): Promise<any> {
 
     const { imgError, image_link,id} = data;
@@ -229,6 +232,28 @@ export class HikvisionUserAddService {
     // console.log(response, 'response =====>');
     return response;
   }
+
+
+  async userAddResponse(data:any): Promise<any> {
+    const {id, name, surname,type} = data;
+    
+    try{
+      const user = await axios.post(urlUserAdd, {
+        headers: {
+          'Content-Type': 'application/json',
+          Token: `${this.configService.get('hikvision.token')}`,
+        },
+        data: {
+          id,
+          type,
+        }
+      });
+    return user;
+
+  }
+  catch(err){
+    return {isSuccess: false, errCode: err}
+  }
 // async fetchUserImage(id: string): Promise<string> {
 //   const user = await this.userService.findById(id);
 //   return user.image;
@@ -239,6 +264,7 @@ export class HikvisionUserAddService {
   //   });
   //   return user;
   // }
+}
 
   
 }

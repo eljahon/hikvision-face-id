@@ -35,9 +35,9 @@ export class UserDto {
   @ApiProperty({ example: 'https://example.com/image.jpg' })
   image_link: string; 
   
-  @IsOptional()
-  @IsArray()
-  @ApiProperty({ example: [] })
-  parents: Parents[];
+  // @IsOptional()
+  // @IsArray()
+  // @ApiProperty({ example: [] })
+  // parents: Parents[];
 
 }
