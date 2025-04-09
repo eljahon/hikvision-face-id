@@ -190,7 +190,7 @@ export class HikvisionUserAddService {
   @Cron('*/10 * * * *')
   async fetchData() {
     const object = await this.fetchUsers();
-    console.log(object, 'object =====>');
+    // console.log(object, 'object =====>');
     const successUserList = [];
 
     // const List = await this.userService.findAll({page: 1, pageSize: 1000});
@@ -219,8 +219,8 @@ export class HikvisionUserAddService {
       if (isSuccessCreate&&data.isSuccess) {
         const { isSuccess: isSuccessUpload, errCode: errCodeUpload } =
           await this.uploadFaceHikvisionIn(item);
-          await this.uploadFaceHikvisionOut(item);
-        if (isSuccessUpload) {
+         const _data = await this.uploadFaceHikvisionOut(item);
+        if (isSuccessUpload&&_data.isSuccessUpload) {
           const _data = await this.userService.create({
             employeeNoString: item.id,
             name: item.name,
