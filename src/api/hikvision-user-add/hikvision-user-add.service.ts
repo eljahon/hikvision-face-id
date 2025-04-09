@@ -200,20 +200,19 @@ export class HikvisionUserAddService {
 
       console.log('User created for name and face  image', item);
       
-      const { isSuccess: isSuccessCreate, errCode: errCodeCreate } =
-        await this.createEmployeesHikvisionIn(item);
-        const data = await this.createEmployeesHikvisionOut(item);
+      const isSuccessIn = await this.createEmployeesHikvisionIn(item);
+        
+        const isSuccessOut = await this.createEmployeesHikvisionOut(item);
         
 
-      if (isSuccessCreate&&data.isSuccess) {
-        const { isSuccess: isSuccessUpload, errCode: errCodeUpload } =
-          await this.uploadFaceHikvisionIn(item);
-         const _data = await this.uploadFaceHikvisionOut(item);
-         console.log('User created face image out', _data);
-         console.log('User created face image in', item);
+      if (isSuccessOut.isSuccess&&isSuccessIn.isSuccess) {
+        const isSuccessUploadIn = await this.uploadFaceHikvisionIn(item);
+         const isSuccessUploadOut = await this.uploadFaceHikvisionOut(item);
+         console.log('User created face image out', isSuccessOut);
+         console.log('User created face image in', isSuccessIn);
          
          
-        if (isSuccessUpload&&_data.isSuccess) {
+        if (isSuccessUploadIn.isSuccess&&isSuccessIn.isSuccess) {
           const _data = await this.userService.create({
             employeeNoString: item.id,
             name: item.name,
@@ -222,12 +221,15 @@ export class HikvisionUserAddService {
             image_link: item.image_link,
           });   
           
-          console.log('User created inline', _data);
+          console.log('User created database', _data);
           
           if(_data.id) await this.userAddResponse(item)
         }
       } else {
         // await this.deleteEmployeesHikvision(item.id)
+
+        console.log('User not created ');
+        
       }
     }
 
