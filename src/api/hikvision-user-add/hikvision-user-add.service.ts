@@ -193,20 +193,20 @@ export class HikvisionUserAddService {
     // console.log(object, 'object =====>');
     const successUserList = [];
 
-    // const List = await this.userService.findAll({page: 1, pageSize: 1000});
+    const List = await this.userService.findAll({page: 1, pageSize: 1000});
     // console.log(userList, 'userList =====>');
 
-    // for await (const item of List.data) {
-    //   const { employeeNoString, name } = item;
+    for await (const item of List.data) {
+      const { employeeNoString, name } = item;
 
 
-    //   await this.createEmployeesHikvisionOut({
-    //     id: employeeNoString,
-    //     name: name,
-    //     type: item.type,
-    //     status: item.status,})
+      await this.createEmployeesHikvisionOut({
+        id: employeeNoString,
+        name: name,
+        type: item.type,
+        status: item.status,})
       
-    // }
+    }
     
 
     const _addData = await object.filter((el) => el.status === 'CREATED');
@@ -220,7 +220,7 @@ export class HikvisionUserAddService {
         const { isSuccess: isSuccessUpload, errCode: errCodeUpload } =
           await this.uploadFaceHikvisionIn(item);
          const _data = await this.uploadFaceHikvisionOut(item);
-        if (isSuccessUpload&&_data.isSuccessUpload) {
+        if (isSuccessUpload&&_data.isSuccess) {
           const _data = await this.userService.create({
             employeeNoString: item.id,
             name: item.name,
