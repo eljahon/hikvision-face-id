@@ -52,6 +52,13 @@ export class HikvisionUserAddService {
         doorRight: '1',
       },
     };
+
+    // console.log(urlUserInfo(this.configService.get('hikvision.hikvisionApiIn')), 'reqBody =====>');
+    // console.log(this.configService.get('hikvision.passwordIn'), 'this.configService.get("hikvision.passwordIn") =====>');
+    // console.log(reqBody, 'reqBody =====>');
+    
+    
+    
     const response = await urlLib.request(
       urlUserInfo(this.configService.get('hikvision.hikvisionApiIn')),
       {
@@ -61,7 +68,7 @@ export class HikvisionUserAddService {
         headers: { 'Content-Type': 'application/json' },
       },
     );
-    console.log(response.status, 'response =====>');
+    // console.log(response.status, 'response =====>');
     if (response.status !== 200) return { isSuccess: false, errCode: response.status };
     return { isSuccess: true, errCode: null };
   }
@@ -146,7 +153,7 @@ export class HikvisionUserAddService {
     // console.log(object, 'object =====>');
     const successUserList = [];
 
-    // console.log('fetchData =====>');
+    console.log('fetchData =====>', object);
 
     // const object = [
     //   {id: 34, name: 'Nuriddin', surname: 'Asqarov', image_link: 'https://i.imghippo.com/files/JbfY6250Eo.jpg', type:"CHILD", status:"CREATED"},
@@ -169,7 +176,7 @@ export class HikvisionUserAddService {
             status: item.status,
             image_link: item.image_link,
           });
-          // if(_data.id) await this.userAddResponse(item)
+          if(_data.id) await this.userAddResponse(item)
         }
       } else {
         // await this.deleteEmployeesHikvision(item.id)
