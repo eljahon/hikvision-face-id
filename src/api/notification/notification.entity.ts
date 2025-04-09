@@ -24,6 +24,10 @@ export class NotificationEntity {
   @Column('varchar', { nullable: true })
   name: string;
 
+
+  @Column('varchar', { nullable: true })
+  status: string;
+
   @Column('varchar', { nullable: true })
   dateTime: string;
 

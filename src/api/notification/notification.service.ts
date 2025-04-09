@@ -54,6 +54,7 @@ export class NotificationService {
       name,
       majorEventType,
       dateTime,
+      status: 'in',
     });
      const itemin = await this.notificationRepository.save(item);  
     //  console.log(itemin, '===>>>> itemin');
@@ -84,6 +85,7 @@ export class NotificationService {
       name,
       majorEventType,
       dateTime,
+      status: 'out',
     });
      const itemin = await this.notificationRepository.save(item);     
      
@@ -98,7 +100,7 @@ export class NotificationService {
      
      })
      
-     console.log(data, '===>>>> data');
+     console.log(data, '===>>>> exit api data');
      
       if(data.message === "Created") return 'ok'
     } catch(err){
