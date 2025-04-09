@@ -5,12 +5,16 @@ import { NotificationEntity } from './notification.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto, PaginationResult } from 'src/commons/paginations';
 import NotificationDto from './dto/notification.dto';
+import { log } from 'console';
+import axios from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class NotificationService {
   constructor(
     @InjectRepository(NotificationEntity)
     private readonly notificationRepository: Repository<NotificationEntity>,
+    private readonly configService: ConfigService
   ) {}
   async findAll(
     query: PaginationDto,
@@ -42,9 +46,11 @@ export class NotificationService {
   //     return item
   // }
 
-  async create(req: any, dateTime: string): Promise<NotificationEntity> {
+  async create(req: any, dateTime: string){
     const { employeeNoString, name, majorEventType } =
       req.AccessControllerEvent;
+
+      log(req, '===>>>> req');
 
     const item = this.notificationRepository.create({
       employeeNoString,
@@ -53,8 +59,21 @@ export class NotificationService {
       dateTime,
     });
     // console.log(dateTime, req.dateTime);
-    console.log('item ==========>>>', item);
-    return await this.notificationRepository.save(item);
+     const itemin = await this.notificationRepository.save(item);     
+    try{
+      const {data} =  await axios.post('https://app.eramed.uz/app/api/v1/attendance/enter',{type: 'CHILD', id: Number(itemin.employeeNoString)},{
+        headers:{
+          'Content-Type': 'application/json',
+           Token: `${this.configService.get('hikvision.tokenIn')}`,
+  
+        },
+     
+     })    
+      if(data.message === "Created") return 'ok'
+    } catch(err){
+      // console.log(err, '===>>>> err');
+    }
+    // return 'ok';
   }
 
   // async update(id:string,data:NotificationDto): Promise<UpdateResult> {

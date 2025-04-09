@@ -34,26 +34,19 @@ export class NotificationController {
   @UseInterceptors(AnyFilesInterceptor())
   @HttpCode(HttpStatus.OK)
   async createNotificationIn(@Body() data: any): Promise<any> {
-    //   console.log(JSON.parse(JSON.stringify(data.event_log)), '===>>>> data body')
+    // console.log(JSON.parse(JSON.stringify(data.event_log)), '===>>>> data body')
     const req = JSON.parse(data.event_log);
     //   console.log(req, '===>>>> data.event_log');
 
-    //   console.log(req?.AccessControllerEvent, '===>>>> currentVerifyMode');
+      // console.log(req?.AccessControllerEvent, '===>>>> currentVerifyMode');
 
     if (
       req &&
       req.AccessControllerEvent &&
       req?.AccessControllerEvent?.currentVerifyMode !== 'invalid'
     ) {
-      this.notificationService.create(
-        req,
-        dayjs(req.dateTime).format('YYYY-MM-DD HH:mm:ss'),
-      );
-      // console.log('===>>>> items in', req.AccessControllerEvent);
-      // console.log(
-      //   '===>>>> dateTime',
-      //   dayjs(req.dateTime).format('YYYY-MM-DD HH:mm:ss'),
-      // );
+    await this.notificationService.create(req,dayjs(req.dateTime).format('YYYY-MM-DD HH:mm:ss'));
+    
     }
     // console.log(req, '===>>>> req.headers')
 
