@@ -7,7 +7,7 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { useContainer } from 'class-validator';
-const port = 4004;
+const port =process.env.PORT || 4004;
 const logger = new Logger('Request Middleware', { timestamp: true });
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
