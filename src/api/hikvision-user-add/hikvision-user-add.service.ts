@@ -372,10 +372,12 @@ export class HikvisionUserAddService {
       });
 
 
-      // console.log(user, 'user =====>');
+      console.log(user, 'user =====>');
       
       return user;
     } catch (err) {
+      console.log('error in userAddResponse', err);
+      
       return { isSuccess: false, errCode: err };
     }
     // async fetchUserImage(id: string): Promise<string> {
