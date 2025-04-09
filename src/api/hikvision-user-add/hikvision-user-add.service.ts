@@ -208,8 +208,8 @@ export class HikvisionUserAddService {
       if (isSuccessOut.isSuccess&&isSuccessIn.isSuccess) {
         const isSuccessUploadIn = await this.uploadFaceHikvisionIn(item);
          const isSuccessUploadOut = await this.uploadFaceHikvisionOut(item);
-         console.log('User created face image out', isSuccessOut);
-         console.log('User created face image in', isSuccessIn);
+         console.log('User created face image out', isSuccessOut.isSuccess);
+         console.log('User created face image in', isSuccessIn.isSuccess);
          
          
         if (isSuccessUploadIn.isSuccess&&isSuccessIn.isSuccess) {
