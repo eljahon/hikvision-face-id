@@ -21,5 +21,6 @@ export default () => ({
     tokenOut: process.env.FETCH_USERS_API_TOKEN_OUT,
     tokenIn: process.env.FETCH_USER_API_TOKEN_IN,
     userExp: process.env.HIKVISION_USER_EXP,
+    cronTime: process.env.CRON_TIME,
   },
 });
