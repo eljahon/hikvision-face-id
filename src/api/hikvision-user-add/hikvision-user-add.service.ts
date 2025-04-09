@@ -33,7 +33,7 @@ export class HikvisionUserAddService {
   ) {
     // console.log(this.passwordIn, this.hikvisionApiIn, 'this.passwordIn, this.hikvisionApiIn =====>');
   }
-  async createEmployeesHikvision(data: any): Promise<any> {
+  async createEmployeesHikvisionIn(data: any): Promise<any> {
     const { id, name, surname } = data;
     const hikvisionUserExp =
       +this.configService.get('hikvision.hikvisionUserExp') || 2;
@@ -63,6 +63,46 @@ export class HikvisionUserAddService {
       urlUserInfo(this.configService.get('hikvision.hikvisionApiIn')),
       {
         digestAuth: `admin:${this.configService.get('hikvision.passwordIn')}`,
+        method: 'POST',
+        data: reqBody,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
+    // console.log(response.status, 'response =====>');
+    if (response.status !== 200) return { isSuccess: false, errCode: response.status };
+    return { isSuccess: true, errCode: null };
+  }
+
+  async createEmployeesHikvisionOut(data: any): Promise<any> {
+    const { id, name, surname } = data;
+    const hikvisionUserExp =
+      +this.configService.get('hikvision.hikvisionUserExp') || 2;
+    const currentYear = new Date().getFullYear();
+    const reqBody = {
+      UserInfo: {
+        employeeNo: String(id),
+        name: `${name}${surname ? ' ' + surname : ''}`,
+        userType: 'normal',
+        Valid: {
+          enable: true,
+          beginTime: `${currentYear}-01-01T00:00:00`,
+          endTime: `${currentYear + hikvisionUserExp}-01-01T00:00:00`,
+        },
+        RightPlan: [{ planTemplateNo: '1' }],
+        doorRight: '1',
+      },
+    };
+
+    // console.log(urlUserInfo(this.configService.get('hikvision.hikvisionApiIn')), 'reqBody =====>');
+    // console.log(this.configService.get('hikvision.passwordIn'), 'this.configService.get("hikvision.passwordIn") =====>');
+    // console.log(reqBody, 'reqBody =====>');
+    
+    
+    
+    const response = await urlLib.request(
+      urlUserInfo(this.configService.get('hikvision.hikvisionApiOut')),
+      {
+        digestAuth: `admin:${this.configService.get('hikvision.passwordOut')}`,
         method: 'POST',
         data: reqBody,
         headers: { 'Content-Type': 'application/json' },
@@ -147,27 +187,39 @@ export class HikvisionUserAddService {
     //     return false
     //   }
   }
-  @Cron('*/5 * * * * *')
+  @Cron('*/10 * * * *')
   async fetchData() {
     const object = await this.fetchUsers();
-    // console.log(object, 'object =====>');
+    console.log(object, 'object =====>');
     const successUserList = [];
 
-    console.log('fetchData =====>', object);
+    // const List = await this.userService.findAll({page: 1, pageSize: 1000});
+    // console.log(userList, 'userList =====>');
 
-    // const object = [
-    //   {id: 34, name: 'Nuriddin', surname: 'Asqarov', image_link: 'https://i.imghippo.com/files/JbfY6250Eo.jpg', type:"CHILD", status:"CREATED"},
-    //   {id: 35, name: 'Shohjahon', surname: 'Asqarov', image_link: 'https://i.imghippo.com/files/jRp8228Xc.jpg', type:"CHILD", status:"CREATED"},
-    //   {id: 36, name: 'Shohjahon', surname: 'Qodirov', image_link: 'https://i.imghippo.com/files/tLpo6534lo.jpg', type:"CHILD", status:"CREATED"},
-    // ];
-    for (const item of object) {
+    // for await (const item of List.data) {
+    //   const { employeeNoString, name } = item;
+
+
+    //   await this.createEmployeesHikvisionOut({
+    //     id: employeeNoString,
+    //     name: name,
+    //     type: item.type,
+    //     status: item.status,})
+      
+    // }
+    
+
+    const _addData = await object.filter((el) => el.status === 'CREATED');
+    for await (const item of _addData) {
       const { isSuccess: isSuccessCreate, errCode: errCodeCreate } =
-        await this.createEmployeesHikvision(item);
+        await this.createEmployeesHikvisionIn(item);
+        const data = await this.createEmployeesHikvisionOut(item);
+        
 
-      if (isSuccessCreate) {
+      if (isSuccessCreate&&data.isSuccess) {
         const { isSuccess: isSuccessUpload, errCode: errCodeUpload } =
-          await this.uploadFaceHikvision(item);
-        console.log(isSuccessUpload, 'isSuccessUpload user faece id =====>');
+          await this.uploadFaceHikvisionIn(item);
+          await this.uploadFaceHikvisionOut(item);
         if (isSuccessUpload) {
           const _data = await this.userService.create({
             employeeNoString: item.id,
@@ -175,7 +227,7 @@ export class HikvisionUserAddService {
             type: item.type,
             status: item.status,
             image_link: item.image_link,
-          });
+          });          
           if(_data.id) await this.userAddResponse(item)
         }
       } else {
@@ -223,16 +275,12 @@ export class HikvisionUserAddService {
     return user;
   }
 
-  async uploadFaceHikvision(data: any): Promise<any> {
+  async uploadFaceHikvisionOut(data: any): Promise<any> {
     const { imgError, image_link, id } = data;
-
-    console.log(data, 'data =====>');
     try {
-      console.log(image_link, 'image_link =====>');
       const imageBuffer = await axios
         .get(urlPhoto(image_link), { responseType: 'arraybuffer' })
         .then((response) => response.data);
-      console.log(imageBuffer, 'imageBuffer =====>');
       const formData = new FormDataPackage();
       formData.append(
         'FaceDataRecord',
@@ -243,7 +291,47 @@ export class HikvisionUserAddService {
         }),
       );
       formData.append('file', imageBuffer, 'face.jpg');
-      console.log(formData, 'formData =====>');
+      const response = await urlLib.request(
+        urlFaceUpload(this.configService.get('hikvision.hikvisionApiOut')),
+        {
+          digestAuth: `admin:${this.configService.get('hikvision.passwordOut')}`,
+          method: 'PUT',
+          content: formData['getBuffer'](),
+          contentType:
+            'multipart/form-data; boundary=' + formData['getBoundary'](),
+          compressed: true,
+          timeout: 10000,
+        },
+      );
+
+      if (response.statusCode !== 200)
+        return { isSuccess: false, errCode: imgError };
+
+      return { isSuccess: true, errCode: null };
+    } catch (err) {
+      if (err) {
+        return { isSuccess: false, errCode: err };
+      }
+    }
+  }
+
+  async uploadFaceHikvisionIn(data: any): Promise<any> {
+    const { imgError, image_link, id } = data;
+
+    try {
+      const imageBuffer = await axios
+        .get(urlPhoto(image_link), { responseType: 'arraybuffer' })
+        .then((response) => response.data);
+      const formData = new FormDataPackage();
+      formData.append(
+        'FaceDataRecord',
+        JSON.stringify({
+          faceLibType: 'blackFD',
+          FDID: '1',
+          FPID: `${id}`,
+        }),
+      );
+      formData.append('file', imageBuffer, 'face.jpg');
       const response = await urlLib.request(
         urlFaceUpload(this.configService.get('hikvision.hikvisionApiIn')),
         {
@@ -271,6 +359,8 @@ export class HikvisionUserAddService {
   async userAddResponse(data: any): Promise<any> {
     const { id, name, surname, type } = data;
 
+    // console.log(id, name, surname, type, 'id, name, surname, type =====>');
+
     try {
       const user = await axios.post(urlUserAdd, {
         headers: {
@@ -282,6 +372,10 @@ export class HikvisionUserAddService {
           type,
         },
       });
+
+
+      // console.log(user, 'user =====>');
+      
       return user;
     } catch (err) {
       return { isSuccess: false, errCode: err };

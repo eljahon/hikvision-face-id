@@ -36,7 +36,9 @@ export class NotificationController {
   async createNotificationIn(@Body() data: any): Promise<any> {
     // console.log(JSON.parse(JSON.stringify(data.event_log)), '===>>>> data body')
     const req = JSON.parse(data.event_log);
-    //   console.log(req, '===>>>> data.event_log');
+      // console.log(req, '===>>>> data.event_log');
+    // return 'ok';
+
 
       // console.log(req?.AccessControllerEvent, '===>>>> currentVerifyMode');
 
@@ -45,17 +47,26 @@ export class NotificationController {
       req.AccessControllerEvent &&
       req?.AccessControllerEvent?.currentVerifyMode !== 'invalid'
     ) {
-    await this.notificationService.create(req,dayjs(req.dateTime).format('YYYY-MM-DD HH:mm:ss'));
+   return await this.notificationService.createIn(req,dayjs(req.dateTime).format('YYYY-MM-DD HH:mm:ss'));
     
     }
     // console.log(req, '===>>>> req.headers')
 
-    return 'ok';
   }
   @Post('/out')
-  //  @UseInterceptors(AnyFilesInterceptor())
+   @UseInterceptors(AnyFilesInterceptor())
   @HttpCode(HttpStatus.OK)
-  async createNotificationOut(/* @Body() data: any */): Promise<any> {
+  async createNotificationOut(@Body() data: any): Promise<any> {
+    const req = JSON.parse(data.event_log);
+
+    if (
+      req &&
+      req.AccessControllerEvent &&
+      req?.AccessControllerEvent?.currentVerifyMode !== 'invalid'
+    ) {
+   return await this.notificationService.createOut(req,dayjs(req.dateTime).format('YYYY-MM-DD HH:mm:ss'));
+    
+    }
     //   console.log(JSON.parse(JSON.stringify(data.event_log)), '===>>>> data body')
     //   const req = JSON.parse(JSON.stringify(data.event_log))
     //   if(req.AccessControllerEvent.currentVerifyMode !=='invalid') console.log('===>>>> items in',data);

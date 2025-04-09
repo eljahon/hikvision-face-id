@@ -46,20 +46,18 @@ export class NotificationService {
   //     return item
   // }
 
-  async create(req: any, dateTime: string){
+  async createIn(req: any, dateTime: string){
     const { employeeNoString, name, majorEventType } =
       req.AccessControllerEvent;
-
-      log(req, '===>>>> req');
-
     const item = this.notificationRepository.create({
       employeeNoString,
       name,
       majorEventType,
       dateTime,
     });
-    // console.log(dateTime, req.dateTime);
-     const itemin = await this.notificationRepository.save(item);     
+     const itemin = await this.notificationRepository.save(item);  
+    //  console.log(itemin, '===>>>> itemin');
+        
     try{
       const {data} =  await axios.post('https://app.eramed.uz/app/api/v1/attendance/enter',{type: 'CHILD', id: Number(itemin.employeeNoString)},{
         headers:{
@@ -69,6 +67,39 @@ export class NotificationService {
         },
      
      })    
+      if(data.message === "Created") return 'ok'
+    } catch(err){
+      // console.log(err, '===>>>> err');
+    }
+    // return 'ok';
+  }
+
+  async createOut(req: any, dateTime: string){
+    const { employeeNoString, name, majorEventType } =
+      req.AccessControllerEvent;
+
+
+    const item = this.notificationRepository.create({
+      employeeNoString,
+      name,
+      majorEventType,
+      dateTime,
+    });
+     const itemin = await this.notificationRepository.save(item);     
+     
+    try{
+      
+      const {data} =  await axios.post('https://app.eramed.uz/app/api/v1/attendance/exit',{type: 'CHILD', id: Number(itemin.employeeNoString)},{
+        headers:{
+          'Content-Type': 'application/json',
+           Token: `${this.configService.get('hikvision.tokenOut')}`,
+  
+        },
+     
+     })
+     
+     console.log(data, '===>>>> data');
+     
       if(data.message === "Created") return 'ok'
     } catch(err){
       // console.log(err, '===>>>> err');
