@@ -358,16 +358,17 @@ export class HikvisionUserAddService {
     console.log(id, name, surname, type, 'id, name, surname, type =====>');
 
     try {
-      const user = await axios.post('https://app.eramed.uz/app/api/v1/child/register/callback', {
-        headers: {
-          'Content-Type': 'application/json',
-          Token: `${this.configService.get('hikvision.token')}`,
-        },
-        data: {
+      const headers = {
+        'Content-Type': 'application/json',
+        Token: `${this.configService.get('hikvision.token')}`,
+      }
+      const user = await axios.post('https://app.eramed.uz/app/api/v1/child/register/callback',
+       
+        {
           id,
           type,
         },
-      });
+      { headers });
 
 
       console.log(user, 'user callback =====>');
