@@ -210,9 +210,7 @@ export class HikvisionUserAddService {
          const isSuccessUploadOut = await this.uploadFaceHikvisionOut(item);
          console.log('User created face image out', isSuccessOut.isSuccess);
          console.log('User created face image in', isSuccessIn.isSuccess);
-         
-         
-        if (isSuccessUploadIn.isSuccess&&isSuccessIn.isSuccess) {
+        if (isSuccessUploadIn.isSuccess&&isSuccessUploadOut.isSuccess) {
           const _data = await this.userService.create({
             employeeNoString: item.id,
             name: item.name,
@@ -357,7 +355,7 @@ export class HikvisionUserAddService {
   async userAddResponse(data: any): Promise<any> {
     const { id, name, surname, type } = data;
 
-    // console.log(id, name, surname, type, 'id, name, surname, type =====>');
+    console.log(id, name, surname, type, 'id, name, surname, type =====>');
 
     try {
       const user = await axios.post(urlUserAdd, {
@@ -372,9 +370,9 @@ export class HikvisionUserAddService {
       });
 
 
-      console.log(user, 'user =====>');
+      console.log(user, 'user callback =====>');
       
-      return user;
+      return await user;
     } catch (err) {
       console.log('error in userAddResponse', err);
       
