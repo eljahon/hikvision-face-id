@@ -221,7 +221,7 @@ export class HikvisionUserAddService {
           
           console.log('User created database', _data);
           
-          if(_data.id) await this.userAddResponse(item)
+          if(_data) await this.userAddResponse(item)
         }
       } else {
         // await this.deleteEmployeesHikvision(item.id)
