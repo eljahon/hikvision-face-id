@@ -140,7 +140,7 @@ export class HikvisionUserAddService {
     //     return false
     //   }
   }
-  // @Cron('*/5 * * * * *')
+  @Cron('*/5 * * * * *')
   async fetchData() {
     const object = await this.fetchUsers();
     // console.log(object, 'object =====>');
