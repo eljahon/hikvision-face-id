@@ -191,7 +191,7 @@ export class HikvisionUserAddService {
   async fetchData() {
     const object = await this.fetchUsers();
     console.log(object, 'fetch user list  =====>');
-    // const successUserList = [];
+    const successUserList = [];
 
     
 
