@@ -190,27 +190,16 @@ export class HikvisionUserAddService {
   @Cron('*/30 * * * * * ')
   async fetchData() {
     const object = await this.fetchUsers();
-    // console.log(object, 'object =====>');
-    const successUserList = [];
+    console.log(object, 'fetch user list  =====>');
+    // const successUserList = [];
 
-    const List = await this.userService.findAll({page: 1, pageSize: 1000});
-    // console.log(userList, 'userList =====>');
-
-    for await (const item of List.data) {
-      const { employeeNoString, name } = item;
-
-
-      await this.createEmployeesHikvisionOut({
-        id: employeeNoString,
-        name: name,
-        type: item.type,
-        status: item.status,})
-      
-    }
     
 
     const _addData = await object.filter((el) => el.status === 'CREATED');
     for await (const item of _addData) {
+
+      console.log('User created for name and face  image', item);
+      
       const { isSuccess: isSuccessCreate, errCode: errCodeCreate } =
         await this.createEmployeesHikvisionIn(item);
         const data = await this.createEmployeesHikvisionOut(item);
@@ -220,6 +209,10 @@ export class HikvisionUserAddService {
         const { isSuccess: isSuccessUpload, errCode: errCodeUpload } =
           await this.uploadFaceHikvisionIn(item);
          const _data = await this.uploadFaceHikvisionOut(item);
+         console.log('User created face image out', _data);
+         console.log('User created face image in', item);
+         
+         
         if (isSuccessUpload&&_data.isSuccess) {
           const _data = await this.userService.create({
             employeeNoString: item.id,
@@ -227,7 +220,10 @@ export class HikvisionUserAddService {
             type: item.type,
             status: item.status,
             image_link: item.image_link,
-          });          
+          });   
+          
+          console.log('User created inline', _data);
+          
           if(_data.id) await this.userAddResponse(item)
         }
       } else {
