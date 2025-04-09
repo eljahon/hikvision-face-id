@@ -199,18 +199,23 @@ export class HikvisionUserAddService {
   }
 
   async fetchUsers(): Promise<any> {
-    const items = await fetch(
-      `https://app.eramed.uz/app/api/v1/child/get/register`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Token: `${this.configService.get('hikvision.token')}`,
+    try{
+      const items = await fetch(
+        `https://app.eramed.uz/app/api/v1/child/get/register`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Token: `${this.configService.get('hikvision.token')}`,
+          },
         },
-      },
-    );
-    const { object } = await items.json();
-    return object;
+      );
+      const { object } = await items.json();
+      return object;
+    } catch (err) {
+      console.log(err, 'err =====> user fetch request to server');
+    
+    }
   }
 
   async userFindById(id: string): Promise<UserEntity> {
